@@ -58,13 +58,34 @@ const userCredits = async (req, res) => {
 
         const user = await userModel.findById(userId)
         res.json({success:true, credits:user.creditBalance, user:{name:user.name}})
-    
+
     } catch(error){
         console.log(error.message)
         res.json({success: false, message:error.message})
     }
 }
 
+const addCredits = async (req, res) => {
+    try {
+        const { userId, credits } = req.body;
 
+        if (!userId || !credits) {
+            return res.json({ success: false, message: 'Missing userId or credits' });
+        }
 
-export { registerUser, loginUser, userCredits };
+        const user = await userModel.findById(userId);
+        if (!user) {
+            return res.json({ success: false, message: 'User not found' });
+        }
+
+        user.creditBalance += credits;
+        await user.save();
+
+        res.json({ success: true, message: 'Credits added successfully', credits: user.creditBalance });
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: error.message });
+    }
+}
+
+export { registerUser, loginUser, userCredits, addCredits };

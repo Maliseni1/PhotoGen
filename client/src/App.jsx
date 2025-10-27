@@ -12,24 +12,29 @@ import { AppContext } from './context/AppContext'
 
 const App = () => {
 
-  const {showLogin} = useContext(AppContext)
+  const {showLogin, isDarkMode} = useContext(AppContext)
 
-  return ( 
-    <div className='px-4 sm:px-10 md:px-14 lg:px-28
-    min-h-screen bg-gradient-to-b from teal-50 to-orange-50'>
-      <ToastContainer position='bottom-right'/>
-      <Navbar/>      
-      {showLogin && <Login/>}
-      <Routes>
-        <Route path='/' element={<Home/>} />
-        <Route path='/result' element={<Result/>} />
-        <Route path='/buycredit' element={<BuyCredit/>} />
-      </Routes>
+  return ( 
+    // 1. Removed Tailwind gradient classes (from-teal-50 to-orange-50)
+    // 2. Added inline style to use the --bg-primary CSS variable
+    <div 
+      className={`px-4 sm:px-10 md:px-14 lg:px-28
+        min-h-screen ${isDarkMode ? 'dark' : ''}`}
+      style={{ background: 'var(--bg-primary)' }}
+    >
+      <ToastContainer position='bottom-right'/>
+      <Navbar/>      
+      {showLogin && <Login/>}
+      <Routes>
+        <Route path='/' element={<Home/>} />
+        <Route path='/result' element={<Result/>} />
+        <Route path='/buycredit' element={<BuyCredit/>} />
+      </Routes>
 
-      <Footer/>
-      
-    </div>
-  )
+      <Footer/>
+      
+    </div>
+  )
 
 }
 

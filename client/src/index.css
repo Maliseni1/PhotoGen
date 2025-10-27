@@ -4,8 +4,42 @@
 @tailwind components;
 @tailwind utilities;
 
-*{
-  font-family: Outfit;
+/* Define global CSS variables for colors.
+  :root holds the default (light mode) values.
+  I've used your original gradient for the --bg-primary.
+*/
+:root {
+  --bg-primary: linear-gradient(to bottom, #f0fdfa, #fff7ed); /* from-teal-50 to-orange-50 */
+  --bg-secondary: #ffffff;   /* white */
+  --text-primary: #1f2937;   /* gray-800 */
+  --text-secondary: #6b7280; /* gray-500 */
+  --accent-color: #f97316;   /* orange-500 */
+  --border-color: #e5e7eb;   /* gray-200 */
+}
+
+/* When the .dark class is active (from App.jsx),
+  these variable values will be used instead.
+*/
+.dark {
+  --bg-primary: linear-gradient(to bottom, #134e4a, #18181b); /* dark-teal to dark-zinc */
+  --bg-secondary: #27272a;   /* zinc-800 */
+  --text-primary: #f4f4f5;   /* zinc-100 */
+  --text-secondary: #a1a1aa; /* zinc-400 */
+  --accent-color: #fb923c;   /* orange-400 */
+  --border-color: #3f3f46;   /* zinc-700 */
+}
+
+/* This applies the default text color to the whole app.
+  It will automatically use the correct --text-primary variable.
+*/
+body {
+  color: var(--text-primary);
+}
+
+
+/* Your original styles */
+* {
+  font-family: 'Outfit', sans-serif;
 }
 
 .placeholder-color{
