@@ -3,13 +3,14 @@ import userModel from "../models/userModel.js"
 import FormData from "form-data"
 import { isValidObjectId } from "mongoose"
 
-
 export const generateImage = async (req, res) =>{
     try {
-
         const {prompt} = req.body;
-
         const userId = req.userId;
+
+        if (!isValidObjectId(userId)){
+            return res.json({success:false, message: 'Invalid User'});
+        }
 
         const user = await userModel.findById(userId)
 
@@ -17,12 +18,7 @@ export const generateImage = async (req, res) =>{
             return res.json({success:false, message: 'Missing Details'})
         }
 
-        if (!isValidObjectId(userId)){
-            return res.json({success:false, message: 'Invalid User'});
-        }
-
-
-        if(user.creditBalance === 0 || userModel.creditBalance < 0){
+        if(user.creditBalance === 0 || user.creditBalance < 0){
             return res.json({success: false, message: 'No Credit Balance', creditBalance: user.creditBalance})
         }
 
