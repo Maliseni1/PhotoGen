@@ -1,4 +1,5 @@
 import React, { useContext } from 'react'
+import { track } from '@vercel/analytics'
 import { assets, plans } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
 import { motion } from 'motion/react'
@@ -18,6 +19,7 @@ const BuyCredit = () => {
       if (data.success) {
         toast.success('Credits added successfully!')
         loadCreditData()
+        track('Credits Purchased', { plan: plan.id, amount: plan.price, credits: plan.credits })
       } else {
         toast.error(data.message)
       }

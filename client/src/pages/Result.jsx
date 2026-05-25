@@ -1,4 +1,5 @@
 import React, { useContext, useState, useRef } from 'react'
+import { track } from '@vercel/analytics'
 import { assets } from '../assets/assets'
 import { motion } from 'motion/react'
 import { AppContext } from '../context/AppContext'
@@ -21,6 +22,7 @@ const Result = () => {
       if (image) {
         setIsImageLoaded(true)
         setImage(image)
+        track('Image Generated', { promptLength: input.length })
       }
     }
     setLoading(false)

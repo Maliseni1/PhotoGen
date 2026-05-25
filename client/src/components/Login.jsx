@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react'
+import { track } from '@vercel/analytics'
 import { assets } from '../assets/assets'
 import { AppContext } from '../context/AppContext'
 import { motion, AnimatePresence } from 'motion/react'
@@ -36,10 +37,11 @@ const Login = () => {
                 setToken(data.token)
                 setUser(data.user)
                 localStorage.setItem('token', data.token)
-                toast.success(state === 'Login' ? 'Welcome back! 🎉' : 'Account created! 🚀', {
+                toast.success(state === 'Login' ? 'Welcome back!' : 'Account created!', {
                     className: isDarkMode ? 'dark-toast' : ''
                 })
                 setShowLogin(false)
+                track(state === 'Login' ? 'User Logged In' : 'User Signed Up', { method: 'email' })
             } else {
                 toast.error(data.message)
                 setShake(true)

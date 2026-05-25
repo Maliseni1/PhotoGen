@@ -2,6 +2,7 @@ import React, { useContext, useEffect } from 'react'
 import { Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import { ToastContainer } from 'react-toastify'
 import { AnimatePresence } from 'motion/react'
+import { Analytics } from '@vercel/analytics/react'
 
 import Home from './pages/Home'
 import Result from './pages/Result'
@@ -61,6 +62,8 @@ const App = () => {
             </Routes>
 
             <Footer />
+
+            <Analytics />
         </div>
     )
 }
