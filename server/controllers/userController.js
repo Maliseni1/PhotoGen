@@ -1,6 +1,59 @@
 import userModel from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { OAuth2Client } from 'google-auth-library';
+
+const googleAuth = async (req, res) => {
+    try {
+        const { credential } = req.body; // Google ID token from frontend
+
+        if (!credential) {
+            return res.json({ success: false, message: 'No Google credential provided' });
+        }
+
+        // Verify with Google
+        const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const ticket = await client.verifyIdToken({
+            idToken: credential,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        const { sub: googleId, email, name, picture } = payload;
+
+        // Find or create user
+        let user = await userModel.findOne({ email });
+
+        if (user) {
+            // Existing user — link Google ID if not already linked
+            if (!user.googleId) {
+                user.googleId = googleId;
+                await user.save();
+            }
+        } else {
+            // New Google user
+            user = new userModel({
+                name,
+                email,
+                googleId,
+                // no password, creditBalance defaults to 5
+            });
+            await user.save();
+        }
+
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+
+        res.json({
+            success: true,
+            token,
+            user: { name: user.name, _id: user._id }
+        });
+
+    } catch (error) {
+        console.log(error);
+        res.json({ success: false, message: 'Google authentication failed' });
+    }
+}
 
 const registerUser = async (req, res) => {
     try {
@@ -22,7 +75,7 @@ const registerUser = async (req, res) => {
 
         const token = jwt.sign({id: user._id}, process.env.JWT_SECRET)
 
-        res.json({success:true, token, user:{name: user.name}})
+        res.json({success:true, token, user:{name: user.name, _id: user._id}})
 
     } catch (error) {
         console.log(error)
@@ -42,7 +95,7 @@ const loginUser = async (req, res) => {
         const isMatch = await bcrypt.compare(password, user.password)
         if(isMatch){
             const token = jwt.sign({id: user._id}, process.env.JWT_SECRET)
-            return res.json({success:true, token, user:{name: user.name}})  
+            return res.json({success:true, token, user:{name: user.name, _id: user._id}})  
         } else{
             return res.json({success:false, message: 'Invalid credentials'})    
         }
@@ -55,9 +108,8 @@ const loginUser = async (req, res) => {
 const userCredits = async (req, res) => {
     try{
         const {userId} = req;
-
         const user = await userModel.findById(userId)
-        res.json({success:true, credits:user.creditBalance, user:{name:user.name}})
+        res.json({success:true, credits:user.creditBalance, user:{name:user.name, _id:user._id}})
 
     } catch(error){
         console.log(error.message)
@@ -67,7 +119,8 @@ const userCredits = async (req, res) => {
 
 const addCredits = async (req, res) => {
     try {
-        const { userId, credits } = req.body;
+        const userId = req.userId;
+        const { credits } = req.body;
 
         if (!userId || !credits) {
             return res.json({ success: false, message: 'Missing userId or credits' });
@@ -78,7 +131,7 @@ const addCredits = async (req, res) => {
             return res.json({ success: false, message: 'User not found' });
         }
 
-        user.creditBalance += credits;
+        user.creditBalance += Number(credits);
         await user.save();
 
         res.json({ success: true, message: 'Credits added successfully', credits: user.creditBalance });
@@ -88,4 +141,4 @@ const addCredits = async (req, res) => {
     }
 }
 
-export { registerUser, loginUser, userCredits, addCredits };
+export { googleAuth, registerUser, loginUser, userCredits, addCredits };

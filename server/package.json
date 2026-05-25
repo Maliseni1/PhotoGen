@@ -18,7 +18,9 @@
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "form-data": "^4.0.4",
+    "google-auth-library": "^10.6.2",
     "jsonwebtoken": "^9.0.2",
+    "mongodb": "^7.2.0",
     "mongoose": "^8.19.2",
     "nodemon": "^3.1.10",
     "razorpay": "^2.9.6"

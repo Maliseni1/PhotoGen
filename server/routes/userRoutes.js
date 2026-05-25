@@ -1,10 +1,11 @@
 import express from "express";
-import {registerUser, loginUser, userCredits, addCredits} from "../controllers/userController.js";
+import {registerUser, loginUser, userCredits, addCredits, googleAuth} from "../controllers/userController.js";
 import userAuth from "../middlewares/auth.js";
 
 
 const userRouter = express.Router()
 
+userRouter.post('/google-auth', googleAuth);
 userRouter.post('/register', registerUser)
 userRouter.post('/login', loginUser)
 userRouter.get('/credits', userAuth, userCredits)
